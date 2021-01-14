@@ -54,8 +54,9 @@ def process_fixation(data, num_frames):
             frame_no = frame_no + 1
         else:
             iter = iter + 1
-    print(num_frames)
-    print(fixations)
+    return fixations
+    #print(num_frames)
+    #print(fixations)
     #nme = ["aparna", "pankaj", "sudhir", "Geeku"]
     #deg = ["MBA", "BCA", "M.Tech", "MBA"]
     #scr = [90, 40, 80, 98]
@@ -88,7 +89,9 @@ def create_labels():
                 next(reader) # skip header
                 data = [r[5:11] for r in reader]
                 if file == 'am_0':
-                    process_fixation(data, num_frames)
+                    fixations = process_fixation(data, num_frames)
+                    pd.DataFrame(fixations).to_csv("file1.csv")
+
 
 
 
