@@ -50,7 +50,7 @@ def process_fixation(data, num_frames):
     while frame_no < num_frames:
         frame_time = frame_no * 1/fps
         if frame_time < float(data[iter][2]) + float(data[iter][3]):
-            fixations.append([frame_no, float(data[iter][0]), float(data[iter][1]), int(data[iter][-1])])
+            fixations.append([float(data[iter][0]), float(data[iter][1]), int(data[iter][-1])])
             frame_no = frame_no + 1
         else:
             if iter < len(data) - 1:
@@ -58,7 +58,7 @@ def process_fixation(data, num_frames):
             else:
                 data[iter][3] = 99
     fixs = np.array(fixations)
-    return {'frame_num': fixs[:,0], 'pos_x': fixs[:,1], 'pos_y': fixs[:,2], 'valid':fixs[:,3]}
+    return {'pos_x': fixs[:,0], 'pos_y': fixs[:,1], 'valid': fixs[:,2]}
     #print(num_frames)
     #print(fixations)
     #nme = ["aparna", "pankaj", "sudhir", "Geeku"]
