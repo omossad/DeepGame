@@ -86,7 +86,7 @@ def create_labels():
             with open(input_file) as f:
                 reader = csv.reader(f)
                 next(reader) # skip header
-                data = [r[5:11] for r in reader]
+                data = [float(r[5:11]) for r in reader]
                 if file == 'am_0':
                     process_fixation(data, num_frames)
 
