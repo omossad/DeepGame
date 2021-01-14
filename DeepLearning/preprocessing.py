@@ -46,7 +46,7 @@ def process_fixation(data, num_frames):
     fps = utils.get_fps()
     frame_no  = 0
     iter = 0
-    fixations = []
+    fixations = [["frame_num", "x", "y", "valid"]]
     while frame_no < num_frames:
         frame_time = frame_no * 1/fps
         if frame_time < float(data[iter][2]) + float(data[iter][3]):
@@ -54,6 +54,9 @@ def process_fixation(data, num_frames):
             frame_no = frame_no + 1
         else:
             iter = iter + 1
+            if iter > len(data):
+                iter = iter - 1
+                data[iter][3] = 99
     return fixations
     #print(num_frames)
     #print(fixations)
