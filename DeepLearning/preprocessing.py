@@ -81,16 +81,15 @@ def create_labels():
                     player_name = x
             fixation_file_name = 'User '+ file[3:]
             input_file = data_path + 'raw_data\\' + player_name + '\\result\\' + fixation_file_name + '_fixations.csv'
-            output_file = data_path + 'raw_labels\\' + game + '\\' + file + '.txt'
+            output_file = data_path + 'raw_labels\\' + game + '\\' + file + '.csv'
             frames_path = data_path + 'raw_frames\\' + game + '\\' + file + '\\'
             num_frames = len(os.listdir(frames_path))
             with open(input_file) as f:
                 reader = csv.reader(f)
                 next(reader) # skip header
                 data = [r[5:11] for r in reader]
-                if file == 'am_0':
-                    fixations = process_fixation(data, num_frames)
-                    pd.DataFrame(fixations).to_csv("file1.csv")
+                fixations = process_fixation(data, num_frames)
+                pd.DataFrame(fixations).to_csv(output_file)
 
 
 
