@@ -43,8 +43,10 @@ def create_frames():
             os.system(cmd)
 
 def process_fixation(data, num_frames):
-    for i in range(num_frames):
-        print('sico')
+    print(num_frames)
+    print(data)
+    #for i in range(num_frames):
+    #    print('sico')
 
 def create_labels():
     print('Find Frame Fixations')
@@ -60,28 +62,28 @@ def create_labels():
                 if x.startswith(file[0:2]):
                     player_name = x
             fixation_file_name = 'User '+ file[3:]
-            input_file = data_path + 'raw_data\\' + player_name + '\\result\\' + fixation_file_name + '_all_gaze.csv'
+            input_file = data_path + 'raw_data\\' + player_name + '\\result\\' + fixation_file_name + '_fixations.csv'
             output_file = data_path + 'raw_labels\\' + game + '\\' + file + '.txt'
             frames_path = data_path + 'raw_frames\\' + game + '\\' + file + '\\'
             num_frames = len(os.listdir(frames_path))
             with open(input_file) as f:
                 reader = csv.reader(f)
                 next(reader) # skip header
-                data = [r[3:11] for r in reader]
+                data = [r[5:8] for r in reader]
                 if file == 'am_0':
                     process_fixation(data, num_frames)
-                    
-            nme = ["aparna", "pankaj", "sudhir", "Geeku"]
-            deg = ["MBA", "BCA", "M.Tech", "MBA"]
-            scr = [90, 40, 80, 98]
+
+            #nme = ["aparna", "pankaj", "sudhir", "Geeku"]
+            #deg = ["MBA", "BCA", "M.Tech", "MBA"]
+            #scr = [90, 40, 80, 98]
 
             # dictionary of lists
-            dict = {'name': nme, 'degree': deg, 'score': scr}
+            #dict = {'name': nme, 'degree': deg, 'score': scr}
 
-            df = pd.DataFrame(dict)
+            #df = pd.DataFrame(dict)
 
             # saving the dataframe
-            df.to_csv('file1.csv')
+            #df.to_csv('file1.csv')
 
 if __name__ == "__main__":
     #create_frames()
