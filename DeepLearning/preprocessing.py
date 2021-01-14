@@ -43,8 +43,25 @@ def create_frames():
             os.system(cmd)
 
 def process_fixation(data, num_frames):
+    fps = utils.get_fps()
+    frame_no  = 0
+    iter = 0
+    fixations = []
+    while frame_no < num_frames:
+        frame_time = frame_no * 1/fps
+        if frame_time < data[iter][2] + data[iter][3]:
+            fixations.append([frame_no, data[iter][0], data[iter][1], data[iter][-1]])
+            frame_no = frame_no + 1
+        else:
+            iter = iter + 1
     print(num_frames)
-    print(data)
+    print(fixations)
+    #nme = ["aparna", "pankaj", "sudhir", "Geeku"]
+    #deg = ["MBA", "BCA", "M.Tech", "MBA"]
+    #scr = [90, 40, 80, 98]
+
+    # dictionary of lists
+    #dict = {'name': nme, 'degree': deg, 'score': scr}
     #for i in range(num_frames):
     #    print('sico')
 
@@ -73,12 +90,7 @@ def create_labels():
                 if file == 'am_0':
                     process_fixation(data, num_frames)
 
-            #nme = ["aparna", "pankaj", "sudhir", "Geeku"]
-            #deg = ["MBA", "BCA", "M.Tech", "MBA"]
-            #scr = [90, 40, 80, 98]
 
-            # dictionary of lists
-            #dict = {'name': nme, 'degree': deg, 'score': scr}
 
             #df = pd.DataFrame(dict)
 
