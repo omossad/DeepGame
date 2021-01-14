@@ -2,7 +2,7 @@ import utils
 import os
 import csv
 import pandas as pd
-
+import numpy as np
 
 games = utils.get_game_list()
 data_path = utils.get_path()
@@ -57,7 +57,8 @@ def process_fixation(data, num_frames):
                 iter = iter + 1
             else:
                 data[iter][3] = 99
-    return {'frame_num': fixations[:,0], 'pos_x': fixations[:,1], 'pos_y': fixations[:,2], 'valid':fixations[:,3]}
+    fixs = np.array(fixations)
+    return {'frame_num': fixs[:,0], 'pos_x': fixs[:,1], 'pos_y': fixs[:,2], 'valid':fixs[:,3]}
     #print(num_frames)
     #print(fixations)
     #nme = ["aparna", "pankaj", "sudhir", "Geeku"]
