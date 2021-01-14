@@ -49,8 +49,8 @@ def process_fixation(data, num_frames):
     fixations = []
     while frame_no < num_frames:
         frame_time = frame_no * 1/fps
-        if frame_time < data[iter][2] + data[iter][3]:
-            fixations.append([frame_no, data[iter][0], data[iter][1], data[iter][-1]])
+        if frame_time < float(data[iter][2]) + float(data[iter][3]):
+            fixations.append([frame_no, float(data[iter][0]), float(data[iter][1]), int(data[iter][-1])])
             frame_no = frame_no + 1
         else:
             iter = iter + 1
@@ -86,7 +86,7 @@ def create_labels():
             with open(input_file) as f:
                 reader = csv.reader(f)
                 next(reader) # skip header
-                data = [float(r[5:11]) for r in reader]
+                data = [r[5:11] for r in reader]
                 if file == 'am_0':
                     process_fixation(data, num_frames)
 
