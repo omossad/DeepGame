@@ -58,7 +58,10 @@ def process_fixation(data, num_frames):
             fixations.append([frame_no, float(data[iter][0]), float(data[iter][1]), int(data[iter][-1])])
             frame_no = frame_no + 1
         else:
-            iter = iter + 1
+            if iter < len(data):
+                iter = iter + 1
+            else:
+                data[iter][3] = 99
     return fixations
     #print(num_frames)
     #print(fixations)
