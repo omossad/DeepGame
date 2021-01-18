@@ -58,7 +58,8 @@ def process_fixation(data, num_frames):
             else:
                 data[iter][3] = 99
     fixs = np.array(fixations)
-    return {'pos_x': fixs[:,0], 'pos_y': fixs[:,1], 'valid': fixs[:,2]}
+    return [{'pos_x': fixs[:,0], 'pos_y': fixs[:,1], 'valid': fixs[:,2]} \
+            , {'pos_x': [int(x*120) for x in fixs[:,0]] , 'pos_y': [int(x*68) for x in fixs[:,1]], 'valid': fixs[:,2]}]
     #print(num_frames)
     #print(fixations)
     #nme = ["aparna", "pankaj", "sudhir", "Geeku"]
@@ -86,14 +87,16 @@ def create_labels():
             fixation_file_name = 'User '+ file[3:]
             input_file = data_path + 'raw_data\\' + player_name + '\\result\\' + fixation_file_name + '_fixations.csv'
             output_file = data_path + 'raw_labels\\' + game + '\\' + file + '.csv'
+            mb_output_file = data_path + 'mb_labels\\' + game + '\\' + file + '.csv'
             frames_path = data_path + 'raw_frames\\' + game + '\\' + file + '\\'
             num_frames = len(os.listdir(frames_path))
             with open(input_file) as f:
                 reader = csv.reader(f)
                 next(reader) # skip header
                 data = [r[5:11] for r in reader]
-                fixations = process_fixation(data, num_frames)
-                pd.DataFrame(fixations).to_csv(output_file)
+                [fixations, fixations_mb] = process_fixation(data, num_frames)
+                #pd.DataFrame(fixations).to_csv(output_file)
+                pd.DataFrame(fixations_mb).to_csv(mb_output_file)
 
 
 
