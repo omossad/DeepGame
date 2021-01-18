@@ -19,5 +19,5 @@ for game in games:
             if x.startswith(file[0:2]):
                 player_name = x
         output_file = data_path + 'raw_labels\\' + game + '\\' + file + '.csv'
-        test = pd.read_csv('data.csv')
+        test = pd.read_csv(output_file)
         print(test)
