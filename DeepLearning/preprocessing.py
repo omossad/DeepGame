@@ -95,7 +95,7 @@ def create_labels():
                 next(reader) # skip header
                 data = [r[5:11] for r in reader]
                 [fixations, fixations_mb] = process_fixation(data, num_frames)
-                #pd.DataFrame(fixations).to_csv(output_file)
+                pd.DataFrame(fixations).to_csv(output_file)
                 pd.DataFrame(fixations_mb).to_csv(mb_output_file)
 
 

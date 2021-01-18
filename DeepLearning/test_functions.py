@@ -20,4 +20,5 @@ for game in games:
                 player_name = x
         output_file = data_path + 'mb_labels\\' + game + '\\' + file + '.csv'
         test = pd.read_csv(output_file)
+        print(test[0])
         print(test)
