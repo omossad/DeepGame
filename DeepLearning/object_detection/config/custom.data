@@ -1,0 +1,4 @@
+classes= 3
+train=train.txt
+valid=valid.txt
+names=fifa.names
