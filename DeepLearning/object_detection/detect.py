@@ -1,8 +1,8 @@
 from __future__ import division
 
 from models import *
-from yolo_utils import *
-from datasets import *
+from utils.yolo_utils import *
+from utils.datasets import *
 
 import os
 import sys
@@ -23,16 +23,16 @@ from matplotlib.ticker import NullLocator
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    #parser.add_argument("--image_folder", type=str, default="C:\\Users\\omossad\\Desktop\\dataset\\model_data\\selected_frames\\pa_8\\", help="path to dataset")
-    parser.add_argument("--image_folder", type=str, default="C:\\Users\\omossad\\Desktop\\recorded_samples\\fifa\\gazepoint\\selected_frames\\", help="path to dataset")
-    parser.add_argument("--model_def", type=str, default="base_model.cfg", help="path to model definition file")
-    parser.add_argument("--weights_path", type=str, default="fifa.pth", help="path to weights file")
-    parser.add_argument("--class_path", type=str, default="classes.names", help="path to class label file")
+    parser.add_argument("--image_folder", type=str, default="C:\\Users\\omossad\\Desktop\\dataset\\model_data\\selected_frames\\pa_8\\", help="path to dataset")
+    #parser.add_argument("--image_folder", type=str, default="C:\\Users\\omossad\\Desktop\\recorded_samples\\fifa\\gazepoint\\selected_frames\\", help="path to dataset")
+    parser.add_argument("--model_def", type=str, default="config\\fifa.cfg", help="path to model definition file")
+    parser.add_argument("--weights_path", type=str, default="weights\\fifa.pth", help="path to weights file")
+    parser.add_argument("--class_path", type=str, default="config\\fifa.names", help="path to class label file")
     parser.add_argument("--conf_thres", type=float, default=0.05, help="object confidence threshold")
     parser.add_argument("--nms_thres", type=float, default=0.1, help="iou thresshold for non-maximum suppression")
     parser.add_argument("--batch_size", type=int, default=1, help="size of the batches")
     parser.add_argument("--n_cpu", type=int, default=0, help="number of cpu threads to use during batch generation")
-    parser.add_argument("--img_size", type=int, default=608, help="size of each image dimension")
+    parser.add_argument("--img_size", type=int, default=416, help="size of each image dimension")
     parser.add_argument("--checkpoint_model", type=str, help="path to checkpoint model")
     #parser.add_argument("--out_folder", type=str, default="C:\\Users\\omossad\\Desktop\\dataset\\model_data\\objects\\pa_8\\", help="path to output_folder")
     parser.add_argument("--out_folder", type=str, default="C:\\Users\\omossad\\Desktop\\recorded_samples\\fifa\\model_data\\objects\\", help="path to output_folder")
@@ -46,6 +46,8 @@ if __name__ == "__main__":
 
     # Set up model
     model = Darknet(opt.model_def, img_size=opt.img_size).to(device)
+    traced_script_module = torch.jit.script(model)
+    traced_script_module.save("model.pt")
 
     if opt.weights_path.endswith(".weights"):
         # Load darknet weights
@@ -108,4 +110,4 @@ if __name__ == "__main__":
             #n_cls_preds = len(unique_labels)
             #bbox_colors = random.sample(colors, n_cls_preds)
             #print(detections)
-        torch.save(detections, img_name)
+        #torch.save(detections, img_name)
