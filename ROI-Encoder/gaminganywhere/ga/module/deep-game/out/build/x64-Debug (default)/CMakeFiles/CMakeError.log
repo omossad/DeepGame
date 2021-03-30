@@ -1,0 +1,12 @@
+Determining if the C compiler works failed with the following output:
+Change Dir: C:/Users/omossad/Desktop/codes/ROI-Encoder/gaminganywhere/ga/module/deep-game/out/build/x64-Debug (default)/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_fc2ec && [1/2] Building C object CMakeFiles\cmTC_fc2ec.dir\testCCompiler.c.obj
+[2/2] Linking C executable cmTC_fc2ec.exe
+FAILED: cmTC_fc2ec.exe 
+cmd.exe /C "cd . && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_fc2ec.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100183~1.0\x64\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100183~1.0\x64\mt.exe --manifests  -- C:\PROGRA~2\MICROS~4\2019\COMMUN~1\VC\Tools\MSVC\1427~1.291\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_fc2ec.dir\testCCompiler.c.obj  /out:cmTC_fc2ec.exe /implib:cmTC_fc2ec.lib /pdb:cmTC_fc2ec.pdb /version:0.0  /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
+The system cannot find the path specified.
+ninja: build stopped: subcommand failed.
+
+
+
