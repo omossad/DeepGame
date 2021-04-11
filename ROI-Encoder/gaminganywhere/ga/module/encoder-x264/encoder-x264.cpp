@@ -26,7 +26,7 @@
 #include "ga-avcodec.h"
 #include "ga-conf.h"
 #include "ga-module.h"
-
+#include "util.h"
 #include "dpipe.h"
 
 #ifdef __cplusplus
@@ -36,7 +36,7 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-
+#define	POOLSIZE		2
 static struct RTSPConf *rtspconf = NULL;
 
 static int vencoder_initialized = 0;
@@ -52,15 +52,40 @@ static char *_sps[VIDEO_SOURCE_CHANNEL_MAX];
 static int _spslen[VIDEO_SOURCE_CHANNEL_MAX];
 static char *_pps[VIDEO_SOURCE_CHANNEL_MAX];
 static int _ppslen[VIDEO_SOURCE_CHANNEL_MAX];
+static char* _vps[VIDEO_SOURCE_CHANNEL_MAX];
+static int _vpslen[VIDEO_SOURCE_CHANNEL_MAX];
+static bool rc = 0;
+static bool recording = 0;
+static int frames = 0;
+static int fps = 0;
+static double bitrate = 0;
+static FILE* encoded;
+static double sum_enc = 0;
 
 //#define	SAVEENC	"save.264"
-#ifdef SAVEENC
-static FILE *fsaveenc = NULL;
-#endif
+//#ifdef SAVEENC
+//static FILE *fsaveenc = NULL;
+//#endif
 
 static int
 vencoder_deinit(void *arg) {
 	int iid;
+	frames = 0;
+	static char* enc_param[VIDEO_SOURCE_CHANNEL_MAX][4];
+#define	MAXPARAMLEN	64
+	char** pipefmt = (char**)arg;
+	static char pipename[VIDEO_SOURCE_CHANNEL_MAX][4][MAXPARAMLEN];
+	for (iid = 0; iid < video_source_channels(); iid++) {
+		snprintf(pipename[iid][1], MAXPARAMLEN, pipefmt[1], iid);
+		snprintf(pipename[iid][2], MAXPARAMLEN, pipefmt[2], iid);
+		dpipe_t* frame_rc = dpipe_lookup(pipename[iid][1]);
+		if (frame_rc != NULL)
+			dpipe_destroy(frame_rc);
+		dpipe_t* bits_rc = dpipe_lookup(pipename[iid][2]);
+		if (bits_rc != NULL)
+			dpipe_destroy(bits_rc);
+	}
+	ga_error("video encoder: destroyed pipes \n");
 #ifdef SAVEENC
 	if(fsaveenc != NULL) {
 		fclose(fsaveenc);
@@ -103,6 +128,11 @@ vencoder_init(void *arg) {
 	char profile[16], preset[16], tune[16];
 	char x264params[1024];
 	char tmpbuf[64];
+	dpipe_t* dstpipe[VIDEO_SOURCE_CHANNEL_MAX];
+	dpipe_t* dstpipe_bitrates[VIDEO_SOURCE_CHANNEL_MAX];
+	bzero(dstpipe, sizeof(dstpipe));
+	bzero(dstpipe_bitrates, sizeof(dstpipe_bitrates));
+	rc = ga_conf_readbool("content-aware", 0);
 	//
 	if(rtspconf == NULL) {
 		ga_error("video encoder: no configuration found\n");
@@ -111,11 +141,14 @@ vencoder_init(void *arg) {
 	if(vencoder_initialized != 0)
 		return 0;
 	//
+	frames = 0;
+	sum_enc = 0;
 	for(iid = 0; iid < video_source_channels(); iid++) {
-		char pipename[64];
+		char pipename[64], dstpipename[64], dstpipename_bitrates[64];
 		int outputW, outputH;
 		dpipe_t *pipe;
 		x264_param_t params;
+		dpipe_buffer_t* data = NULL;
 		//
 		_sps[iid] = _pps[iid] = NULL;
 		_spslen[iid] = _ppslen[iid] = 0;
@@ -123,6 +156,9 @@ vencoder_init(void *arg) {
 		vencoder_reconf[iid].id = -1;
 		//
 		snprintf(pipename, sizeof(pipename), pipefmt[0], iid);
+		snprintf(dstpipename, sizeof(dstpipename), pipefmt[1], iid);
+		snprintf(dstpipename_bitrates, sizeof(dstpipename_bitrates), pipefmt[2], iid);
+
 		outputW = video_source_out_width(iid);
 		outputH = video_source_out_height(iid);
 		if(outputW % 4 != 0 || outputH % 4 != 0) {
@@ -136,6 +172,44 @@ vencoder_init(void *arg) {
 		ga_error("video encoder: video source #%d from '%s' (%dx%d).\n",
 			iid, pipe->name, outputW, outputH, iid);
 		//
+		//************************************Start Initializing Buffer for Raw frames going to the RC Module************************
+		if (rc) {
+			if (dpipe_lookup(dstpipename) == NULL) {
+				dstpipe[iid] = dpipe_create(iid, dstpipename, POOLSIZE,
+					sizeof(vsource_frame_t) + video_source_mem_size(iid));
+				if (dstpipe[iid] == NULL) {
+					ga_error("Encoder x264 raw frame: create dst-pipeline failed (%s).\n", dstpipename);
+					goto init_failed;
+				}
+				for (data = dstpipe[iid]->in; data != NULL; data = data->next) {
+					if (vsource_frame_init(iid, (vsource_frame_t*)data->pointer) == NULL) {
+						ga_error("Encoder x264 raw frame: init frame failed for %s.\n", dstpipename);
+						goto init_failed;
+					}
+				}
+				video_source_add_pipename(iid, dstpipename);
+			}
+			if (dpipe_lookup(dstpipename_bitrates) == NULL) {
+				dstpipe_bitrates[iid] = dpipe_create(iid, dstpipename_bitrates, ga_conf_readint("video-fps"),
+					sizeof(vsource_frame_t) + video_source_mem_size(iid));
+				if (dstpipe_bitrates[iid] == NULL) {
+					ga_error("Encoder x264 rates frame: create dst-pipeline failed (%s).\n", dstpipename_bitrates);
+					goto init_failed;
+				}
+				for (data = dstpipe_bitrates[iid]->in; data != NULL; data = data->next) {
+					if (vsource_frame_init(iid, (vsource_frame_t*)data->pointer) == NULL) {
+						ga_error("Encoder x264 rates frame: init frame failed for %s.\n", dstpipename_bitrates);
+						goto init_failed;
+					}
+				}
+				video_source_add_pipename(iid, dstpipename_bitrates);
+			}
+		}
+
+		//************************************End Initializing Buffer for Raw frames going to the RC Module************************
+
+
+
 		bzero(&params, sizeof(params));
 		x264_param_default(&params);
 		// fill params
@@ -151,20 +225,32 @@ vencoder_init(void *arg) {
 			}
 		}
 		//
-		if(ga_conf_readbool("content-aware", 0) != 0){
-			x264_param_parse(&params, "aq-mode", "1");			
-			x264_param_parse(&params, "qp", "22");			
-		}
-		else if(ga_conf_mapreadv("video-specific", "b", tmpbuf, sizeof(tmpbuf)) != NULL)
-			ga_x264_param_parse_bit(&params, "bitrate", tmpbuf);
-		if(ga_conf_mapreadv("video-specific", "crf", tmpbuf, sizeof(tmpbuf)) != NULL)
-			x264_param_parse(&params, "crf", tmpbuf);
-		if(ga_conf_mapreadv("video-specific", "vbv-init", tmpbuf, sizeof(tmpbuf)) != NULL)
-			x264_param_parse(&params, "vbv-init", tmpbuf);
-		if(ga_conf_mapreadv("video-specific", "maxrate", tmpbuf, sizeof(tmpbuf)) != NULL)
-			ga_x264_param_parse_bit(&params, "vbv-maxrate", tmpbuf);
-		if(ga_conf_mapreadv("video-specific", "bufsize", tmpbuf, sizeof(tmpbuf)) != NULL)
-			ga_x264_param_parse_bit(&params, "vbv-bufsize", tmpbuf);
+		//if(ga_conf_readbool("content-aware", 0) != 0){
+		//	x264_param_parse(&params, "aq-mode", "1");			
+		//	x264_param_parse(&params, "qp", "22");			
+		//}
+		//if (rc) {
+			bitrate = ga_conf_mapreadint("video-specific", "b");
+			fps = ga_conf_readint("video-fps");
+			if (x264_param_parse(&params, "qp", "22") < 0)
+				ga_error("video encoder: warning - bad x264 param [%s=%s]\n", "qp", "22");;
+			params.rc.f_ip_factor = pow(2.0, 1.0 / 12.0);//to make sure that I frames have same QP as P frames			
+			if (x264_param_parse(&params, "aq-mode", "1") < 0)
+				ga_error("video encoder: warning - bad x264 param [%s=%s]\n", "aq-mode", "1");;
+		//}
+		//else if(ga_conf_mapreadv("video-specific", "b", tmpbuf, sizeof(tmpbuf)) != NULL)
+		//else {
+			if (ga_conf_mapreadv("video-specific", "b", tmpbuf, sizeof(tmpbuf)) != NULL)
+				ga_x264_param_parse_bit(&params, "bitrate", tmpbuf);
+			if (ga_conf_mapreadv("video-specific", "crf", tmpbuf, sizeof(tmpbuf)) != NULL)
+				x264_param_parse(&params, "crf", tmpbuf);
+			if (ga_conf_mapreadv("video-specific", "vbv-init", tmpbuf, sizeof(tmpbuf)) != NULL)
+				x264_param_parse(&params, "vbv-init", tmpbuf);
+			if (ga_conf_mapreadv("video-specific", "maxrate", tmpbuf, sizeof(tmpbuf)) != NULL)
+				ga_x264_param_parse_bit(&params, "vbv-maxrate", tmpbuf);
+			if (ga_conf_mapreadv("video-specific", "bufsize", tmpbuf, sizeof(tmpbuf)) != NULL)
+				ga_x264_param_parse_bit(&params, "vbv-bufsize", tmpbuf);
+		//}
 		if(ga_conf_mapreadv("video-specific", "refs", tmpbuf, sizeof(tmpbuf)) != NULL)
 			x264_param_parse(&params, "ref", tmpbuf);
 		if(ga_conf_mapreadv("video-specific", "me_method", tmpbuf, sizeof(tmpbuf)) != NULL)
@@ -177,7 +263,7 @@ vencoder_init(void *arg) {
 			x264_param_parse(&params, "intra-refresh", tmpbuf);
 		//
 		x264_param_parse(&params, "bframes", "0");
-		x264_param_apply_fastfirstpass(&params);
+		//x264_param_apply_fastfirstpass(&params);
 		if(ga_conf_mapreadv("video-specific", "profile", profile, sizeof(profile)) != NULL) {
 			if(x264_param_apply_profile(&params, profile) < 0) {
 				ga_error("video encoder: x264 - bad profile %s\n", profile);
@@ -236,6 +322,18 @@ vencoder_init(void *arg) {
 	ga_error("video encoder: initialized.\n");
 	return 0;
 init_failed:
+	if (rc) {
+		for (iid = 0; iid < video_source_channels(); iid++) {
+			if (dstpipe[iid] != NULL)
+				dpipe_destroy(dstpipe[iid]);
+			dstpipe[iid] = NULL;
+		}
+		for (iid = 0; iid < video_source_channels(); iid++) {
+			if (dstpipe_bitrates[iid] != NULL)
+				dpipe_destroy(dstpipe_bitrates[iid]);
+			dstpipe_bitrates[iid] = NULL;
+		}
+	}
 	vencoder_deinit(NULL);
 	return -1;
 }
@@ -252,24 +350,29 @@ vencoder_reconfigure(int iid) {
 		int doit = 0;
 		x264_encoder_parameters(encoder, &params);
 		//
-		if(reconf->crf > 0) {
+		if(reconf->crf > 0 && !rc) {
 			params.rc.f_rf_constant = 1.0 * reconf->crf;
 			doit++;
 		}
-		if(reconf->framerate_n > 0) {
+		if(reconf->framerate_n > 0 && !rc) {
 			params.i_fps_num = reconf->framerate_n;
 			params.i_fps_den = reconf->framerate_d > 0 ? reconf->framerate_d : 1;
 			doit++;
 		}
-		if(reconf->bitrateKbps > 0) {
+		if(reconf->bitrateKbps > 0 && !rc) {
 			// XXX: do not use x264_param_parse("bitrate"), it switches mode to ABR
 			// - although mode switching may be not allowed
 			params.rc.i_bitrate = reconf->bitrateKbps;
 			params.rc.i_vbv_max_bitrate = reconf->bitrateKbps;
 			doit++;
 		}
-		if(reconf->bufsize > 0) {
+		if(reconf->bufsize > 0 && !rc) {
 			params.rc.i_vbv_buffer_size = reconf->bufsize;
+			doit++;
+		}
+		if (rc) {
+			//ga_error("force flush:%d\n", params.forceFlush);
+			//params.forceFlush = 1;
 			doit++;
 		}
 		//
@@ -300,8 +403,27 @@ vencoder_threadproc(void *arg) {
 	// arg is pointer to source pipename
 	int iid, outputW, outputH;
 	vsource_frame_t *frame = NULL;
-	char *pipename = (char*) arg;
-	dpipe_t *pipe = dpipe_lookup(pipename);
+	//char *pipename = (char*) arg;
+	char** pipename = (char**)arg;
+	//dpipe_t *pipe = dpipe_lookup(pipename);
+	//ga_error("start x264 thread\n");
+	//ga_error("source name from x265 thread:%s\n",pipename[0]);
+	dpipe_t* pipe = dpipe_lookup(pipename[0]);
+
+	//ga_error("after source pipe lookup\n");
+	//For the content-aware rate control module 
+	dpipe_t* dstpipe = dpipe_lookup(pipename[1]);
+	dpipe_buffer_t* dstdata = NULL;
+	vsource_frame_t* dstframe = NULL;
+	//ga_error("after dest pipe lookup\n");
+	dpipe_t* dstpipe_bitrates = dpipe_lookup(pipename[2]);
+	dpipe_buffer_t* dstdata_bitrates = NULL;
+	vsource_frame_t* dstframe_bitrates = NULL;
+	//ga_error("after bitrates dest pipe lookup\n");
+	dpipe_t* pipe_qp = dpipe_lookup(pipename[3]);
+	dpipe_buffer_t* pipedata_qp = NULL;
+	vsource_frame_t* pipeframe_qp = NULL;
+
 	dpipe_buffer_t *data = NULL;
 	x264_t *encoder = NULL;
 	//
@@ -318,11 +440,32 @@ vencoder_threadproc(void *arg) {
 		ga_error("video encoder: invalid pipeline specified (%s).\n", pipename);
 		goto video_quit;
 	}
+	if (rc && dstpipe == NULL) {
+		ga_error("video encoder: invalid RC pipeline specified (%s).\n", pipename[1]);
+		goto video_quit;
+	}
+
+	if (rc && dstpipe_bitrates == NULL) {
+		ga_error("video encoder: invalid RC pipeline specified (%s).\n", pipename[2]);
+		goto video_quit;
+	}
+
+	if (rc && pipe_qp == NULL) {
+		ga_error("video encoder: invalid qp pipeline specified (%s).\n", pipename[3]);
+		goto video_quit;
+	}
+	//
+	//ga_error("before rtsp conf global\n");
 	//
 	rtspconf = rtspconf_global();
 	// init variables
 	iid = pipe->channel_id;
 	encoder = vencoder[iid];
+	x264_param_t params;
+	//ga_error("before getting params\n");
+	x264_encoder_parameters(encoder, &params);
+	//ga_error("after getting params\n");
+	//
 	//
 	outputW = video_source_out_width(iid);
 	outputH = video_source_out_height(iid);
@@ -364,15 +507,39 @@ vencoder_threadproc(void *arg) {
 		}
 		//
 		x264_picture_init(&pic_in);
+		//x264_picture_init(&params, &pic_in);
 		//
 		pic_in.img.i_csp = X264_CSP_I420;
-		pic_in.img.i_plane = 3;
+		//pic_in.img.i_plane = 3;
 		pic_in.img.i_stride[0] = frame->linesize[0];
 		pic_in.img.i_stride[1] = frame->linesize[1];
 		pic_in.img.i_stride[2] = frame->linesize[2];
 		pic_in.img.plane[0] = frame->imgbuf;
 		pic_in.img.plane[1] = pic_in.img.plane[0] + outputW*outputH;
 		pic_in.img.plane[2] = pic_in.img.plane[1] + ((outputW * outputH) >> 2);
+		if (rc) {
+
+			//ga_error("duplicating raw frame\n");
+			dstdata = dpipe_get(dstpipe);
+			dstframe = (vsource_frame_t*)dstdata->pointer;
+			vsource_dup_frame(frame, dstframe);
+			dpipe_store(dstpipe, dstdata);
+			//this is where the rc module should execute and return an array of QP offsets
+			//ga_error("getting QP offsets\n");
+			pipedata_qp = dpipe_load(pipe_qp, NULL);
+			//ga_error("reading qps\n");
+			pipeframe_qp = (vsource_frame_t*)pipedata_qp->pointer;
+			ga_error("UPDATING ROIS \n");
+			pic_in.prop.quant_offsets = (float*)pipeframe_qp->imgbuf;
+			//pic_in.quantOffsets = (float*)pipeframe_qp->imgbuf;
+			/*unsigned int block_ind=0;
+			for(int x=0;x< heightDelta;x++){
+				for(int y=0;y< widthDelta;y++){
+					ga_error("QP of %d,%d is %f\n",x,y,pic_in.prop.quant_offsets[block_ind++]);
+				}
+			}*/
+			//ga_error("read qps\n");						
+		}
 		// pts must be monotonically increasing
 		if(newpts > pts) {
 			pts = newpts;
@@ -382,13 +549,30 @@ vencoder_threadproc(void *arg) {
 		//pic_in.i_pts = pts;
 		pic_in.i_pts = x264_pts++;
 		// encode
+		//ga_error("before encoding\n");	
+		clock_t begin_enc = clock();
 		if((size = x264_encoder_encode(encoder, &nal, &nnal, &pic_in, &pic_out)) < 0) {
 			ga_error("video encoder: encode failed, err = %d\n", size);
 			dpipe_put(pipe, data);
+			if (rc)
+				dpipe_put(pipe_qp, pipedata_qp);
 			break;
 		}
+		clock_t end_enc = clock();
+		frames++;
+		if (frames % TIME_REPORT == 0) {
+			ga_error("average run encoder %d is %.25f ms sum is %.15f\n", frames / TIME_REPORT, sum_enc / TIME_REPORT, sum_enc);
+			sum_enc = 0;
+		}
+		sum_enc = sum_enc + diffclock(end_enc, begin_enc);
+
+		//ga_error("after encoding\n");
 		dpipe_put(pipe, data);
 		// encode
+		if (rc && pipedata_qp != NULL) {
+			dpipe_put(pipe_qp, pipedata_qp);
+		}
+
 		if(size > 0) {
 			AVPacket pkt;
 #if 1
@@ -404,6 +588,19 @@ vencoder_threadproc(void *arg) {
 				}
 				bcopy(nal[i].p_payload, pktbuf + pktbufsize, nal[i].i_payload);
 				pktbufsize += nal[i].i_payload;
+			}
+			if (rc) {
+				//ga_error("storing frame %d size %d \n",frames,pktbufsize);
+				dstdata_bitrates = dpipe_get(dstpipe_bitrates);
+				dstframe_bitrates = (vsource_frame_t*)dstdata_bitrates->pointer;
+				dstframe_bitrates->pixelformat = AV_PIX_FMT_RGBA;	//yuv420p;
+				dstframe_bitrates->realwidth = 1;
+				dstframe_bitrates->realheight = 1;
+				dstframe_bitrates->realstride = 1;
+				dstframe_bitrates->realsize = 1;
+				*((float*)dstframe_bitrates->imgbuf) = (float)pktbufsize;
+				dpipe_store(dstpipe_bitrates, dstdata_bitrates);
+				//ga_error("frame size stored\n");
 			}
 			pkt.size = pktbufsize;
 			pkt.data = pktbuf;
@@ -513,6 +710,7 @@ video_quit:
 	return NULL;
 }
 
+/*
 static int
 vencoder_start(void *arg) {
 	int iid;
@@ -525,6 +723,39 @@ vencoder_start(void *arg) {
 	for(iid = 0; iid < video_source_channels(); iid++) {
 		snprintf(pipename[iid], MAXPARAMLEN, pipefmt[0], iid);
 		if(pthread_create(&vencoder_tid[iid], NULL, vencoder_threadproc, pipename[iid]) != 0) {
+			vencoder_started = 0;
+			ga_error("video encoder: create thread failed.\n");
+			return -1;
+		}
+	}
+	ga_error("video encdoer: all started (%d)\n", iid);
+	return 0;
+}
+*/
+static int
+vencoder_start(void* arg) {
+	int iid;
+	char** pipefmt = (char**)arg;
+	static char* enc_param[VIDEO_SOURCE_CHANNEL_MAX][4];
+#define	MAXPARAMLEN	64
+	static char pipename[VIDEO_SOURCE_CHANNEL_MAX][4][MAXPARAMLEN];
+	if (vencoder_started != 0)
+		return 0;
+	vencoder_started = 1;
+	for (iid = 0; iid < video_source_channels(); iid++) {
+		snprintf(pipename[iid][0], MAXPARAMLEN, pipefmt[0], iid);
+		//ga_error("source:%s\n",pipename[iid][0]);
+		snprintf(pipename[iid][1], MAXPARAMLEN, pipefmt[1], iid);
+		//ga_error("dest:%s\n",pipename[iid][1]);
+		snprintf(pipename[iid][2], MAXPARAMLEN, pipefmt[2], iid);
+		//ga_error("dest_bitrates:%s\n",pipename[iid][2]);
+		snprintf(pipename[iid][3], MAXPARAMLEN, pipefmt[3], iid);
+		//ga_error("src_qps:%s\n",pipename[iid][3]);
+		enc_param[iid][0] = pipename[iid][0];
+		enc_param[iid][1] = pipename[iid][1];
+		enc_param[iid][2] = pipename[iid][2];
+		enc_param[iid][3] = pipename[iid][3];
+		if (pthread_create(&vencoder_tid[iid], NULL, vencoder_threadproc, enc_param[iid]) != 0) {
 			vencoder_started = 0;
 			ga_error("video encoder: create thread failed.\n");
 			return -1;

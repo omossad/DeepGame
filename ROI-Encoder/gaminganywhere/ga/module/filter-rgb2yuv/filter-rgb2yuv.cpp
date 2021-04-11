@@ -43,10 +43,10 @@ static int filter_started = 0;
 static pthread_t filter_tid[VIDEO_SOURCE_CHANNEL_MAX];
 static FILE *savefp = NULL;
 static bool recording = 0;
-static int frames =0 ;
-static FILE* raw;
-static int skip;
-static int skipped =0;
+//static int frames =0 ;
+//static FILE* raw;
+//static int skip;
+//static int skipped =0;
 /* filter_RGB2YUV_init: arg is two pointers to pipeline format string */
 /*	1st ptr: source pipeline */
 /*	2nd ptr: destination pipeline */
@@ -68,10 +68,10 @@ filter_RGB2YUV_init(void *arg) {
 		savefp = ga_save_init(savefile);
 	}
 	recording=ga_conf_readbool("recording", 0);
-	if(recording){
-		raw=fopen("raw.yuv","ab");
-		skip= ga_conf_readint("skip");
-	}
+	//if(recording){
+	//	raw=fopen(savefile,"ab");
+	//	skip= ga_conf_readint("skip");
+	//}
 #ifdef ENABLE_EMBED_COLORCODE
 	vsource_embed_colorcode_init(0/*RGBmode*/);
 #endif
@@ -304,14 +304,14 @@ filter_RGB2YUV_threadproc(void *arg) {
 		if(iid == 0 && savefp != NULL) {
 			ga_save_yuv420p(savefp, outputW, outputH, dst, dstframe->linesize);
 		}
-		skipped++;
-		if(recording && skipped>skip){			
-			if(frames<MAX_RECORD)
-				fwrite(dstframe->imgbuf,sizeof(char),1.5f * outputW * outputH,raw);		
-			else if(frames==MAX_RECORD)
-				fclose(raw);
-			frames++;
-		}		
+		//skipped++;
+		//if(recording && skipped>skip){			
+		//	if(frames<MAX_RECORD)
+		//		fwrite(dstframe->imgbuf,sizeof(char),1.5f * outputW * outputH,raw);		
+		//	else if(frames==MAX_RECORD)
+		//		fclose(raw);
+		//	frames++;
+		//}		
 		//
 		dpipe_put(srcpipe, srcdata);
 		dpipe_store(dstpipe, dstdata);
@@ -377,8 +377,8 @@ filter_RGB2YUV_stop(void *arg) {
 	for(iid = 0; iid < video_source_channels(); iid++) {
 		pthread_cancel(filter_tid[iid]);
 	}
-	if(recording)
-		fclose(raw);
+//	if(recording)
+//		fclose(raw);
 	return 0;
 }
 

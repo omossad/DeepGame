@@ -101,7 +101,7 @@ static int vrc_initialized = 0;
 static int vrc_started = 0;
 static pthread_t vrc_tid[VIDEO_SOURCE_CHANNEL_MAX];
 static bool x264_x265 = 0;//0 -> x264 , 1->x265
-static bool recording = 0;
+//static bool recording = 0;
 
 static int mode = 0;
 static char type[64] = "";
@@ -194,12 +194,8 @@ static int round(float d)
 
 
 //****USED BY DEEPGAME
-static FILE* raw;
 std::ofstream f_num;
-#define OD_STEP 3
 #define LSTM_STEP 6
-#define yolo_width 416
-#define yolo_height 416
 
 /*!
  *************************************************************************************
@@ -738,7 +734,7 @@ vrc_deinit(void *arg) {
 		snprintf(pipename[iid][2], MAXPARAMLEN, pipefmt[2], iid);			
 		dpipe_t* qp_rc = dpipe_lookup(pipename[iid][2]);
 		if(qp_rc != NULL)
-			dpipe_destroy(qp_rc);				
+			dpipe_destroy(qp_rc);
 		ROIs[iid].clear();
 		platforms[iid].clear();
 		devices[iid].clear();		
@@ -783,7 +779,7 @@ vrc_init(void *arg) {
 	dpipe_t *srcpipe[VIDEO_SOURCE_CHANNEL_MAX];
 	dpipe_t *srcpipe_bitrates[VIDEO_SOURCE_CHANNEL_MAX];
 	dpipe_t *srcpipe_d[VIDEO_SOURCE_CHANNEL_MAX];
-	dpipe_t *dstpipe[VIDEO_SOURCE_CHANNEL_MAX];	
+	dpipe_t *dstpipe[VIDEO_SOURCE_CHANNEL_MAX];
 	bzero(dstpipe, sizeof(dstpipe));
 	// arg is image source id
 	int iid;		
@@ -792,7 +788,7 @@ vrc_init(void *arg) {
 	mode = ga_conf_readint("mode");		
 	fps = period =ga_conf_readint("video-fps");	
 	bitrate = ga_conf_mapreadint("video-specific", "b");
-	recording = ga_conf_readbool("recording", 0);
+	//recording = ga_conf_readbool("recording", 0);
 	realWidth =   video_source_curr_width(0);
 	realHeight =  video_source_curr_height(0);		
 	diagonal = (float)sqrt(pow(realWidth * 1.0, 2) + pow(realHeight * 1.0, 2));	
@@ -868,7 +864,6 @@ vrc_init(void *arg) {
 		snprintf(dstpipename, sizeof(dstpipename), filterpipe[2], iid);
 		snprintf(srcpipename_bitrates, sizeof(srcpipename_bitrates), filterpipe[3], iid);	
 
-
 		srcpipe[iid] = dpipe_lookup(srcpipename);
 		srcpipe_d[iid] = dpipe_lookup(srcpipename_d);
 		srcpipe_bitrates[iid] = dpipe_lookup(srcpipename_bitrates);
@@ -911,7 +906,8 @@ vrc_init(void *arg) {
 			r.width= (w)*realWidth;
 			r.height= (h)*realHeight;
 			r.category = category;
-			ROIs[iid].push_back(r);				
+			ROIs[iid].push_back(r);
+			ga_error("ROIS %d\n", r.x);
 		}
 		infile.close();	
 		
@@ -936,6 +932,7 @@ vrc_init(void *arg) {
 			}
 			video_source_add_pipename(iid, dstpipename);
 		}
+
 	}
 	//
 	vrc_initialized = 1;
@@ -947,6 +944,7 @@ init_failed:
 			dpipe_destroy(dstpipe[iid]);
 		dstpipe[iid] = NULL;
 	}
+
 	vrc_deinit(NULL);
 	
 #if 0
@@ -1022,34 +1020,6 @@ static void updateDistanceCAVELambda(int iid){
 
 }
 
-void SaveFrame(AVFrame* pFrame, int width, int height, int iFrame)
-{
-	FILE* pFile;
-	char  szFilename[32];
-	int       y;
-
-	//sprintf(szFilename, "C:\\Users\\omossad\\Desktop\\temp_frames\\frame%d.ppm", iFrame);
-	//pFile = fopen(szFilename, "wb");
-	pFile = fopen("C:\\Users\\omossad\\Desktop\\temp_frames\\frame_1.ppm", "wb");
-
-	
-	if (pFile == NULL)
-	{
-		return;
-	}
-
-	//Scrive l'intestazione del file ( Larghezza x Altezza su video)
-	fprintf(pFile, "P6\n%d %d\n255\n", width, height);
-
-	//Scrive i data pixel
-	for (y = 0; y < height; y++)
-	{
-		fwrite(pFrame->data[0] + y * pFrame->linesize[0], 1, width * 3, pFile);
-	}
-
-	//Chiude il file
-	fclose(pFile);
-}
 
 
 //This function should load the raw frame, the user input and try to predict the ROI (e.g. using a neural network model that was trained on different ROIs)
@@ -1057,194 +1027,37 @@ void SaveFrame(AVFrame* pFrame, int width, int height, int iFrame)
 static void predictROIs(char * pipename, int iid){
 	//load the frame but won't be used for now
 	//ga_error("copying raw frame\n");
-	dpipe_t *srcpipe = dpipe_lookup(pipename);
-	dpipe_buffer_t *srcdata = NULL;
-	vsource_frame_t *srcframe = NULL;
-	srcdata = dpipe_load(srcpipe, NULL);
-	srcframe = (vsource_frame_t*) srcdata->pointer;
-	dpipe_put(srcpipe, srcdata);
+	//dpipe_t *srcpipe = dpipe_lookup(pipename);
+	//dpipe_buffer_t *srcdata = NULL;
+	//vsource_frame_t *srcframe = NULL;
+	//srcdata = dpipe_load(srcpipe, NULL);
+	//srcframe = (vsource_frame_t*) srcdata->pointer;
+	//dpipe_put(srcpipe, srcdata);
 	//ga_error("copied raw frame\n");
 
-	// DEEPGAME
-	/*struct SwsContext* sws_ctx = NULL;
-	sws_ctx =
-		sws_getContext
-		(
-			srcframe->realwidth,
-			srcframe->realheight,
-			srcframe->pixelformat,
-			yolo_width,
-			yolo_height,
-			AV_PIX_FMT_RGB24,
-			SWS_BILINEAR, NULL, NULL, NULL
-		);
-	unsigned char* src[] = { NULL, NULL, NULL, NULL };
-	src[0] = srcframe->imgbuf;
-	src[1] = src[0] + ((srcframe->realwidth * srcframe->realheight));
-	src[2] = src[1] + ((srcframe->realwidth * srcframe->realheight) >> 2);
-	src[3] = NULL;
-	uint8_t* prgb24 = (uint8_t*) calloc(3 * srcframe->realwidth * srcframe->realheight, sizeof(uint8_t));
-	uint8_t* rgb24[1] = { prgb24 };
-	int rgb24_stride[1] = { 3 * srcframe->realwidth };
-	sws_scale(sws_ctx, src, srcframe->linesize, 0, srcframe->realheight, rgb24, rgb24_stride);
-	//if (!out) {
-	//	av_frame_free(&in);
-	//	return AVERROR(ENOMEM);
-	//}
-	//av_frame_copy_props(out, in);
-	// Put 0 to all red byte
-	int i;
-	for (i = 0; i < srcframe->realwidth * srcframe->realheight; i++)
-	{
-
-		rgb24[0][i * 3] = 0;
-	}
-	/*
-	struct SwsContext* swsctx = NULL;
-	dpipe_buffer_t* dstdata = srcdata;
-	vsource_frame_t* dstframe = NULL;
-
-	dstframe = (vsource_frame_t*)dstdata->pointer;
-	// basic info
-	dstframe->imgpts = srcframe->imgpts;
-	dstframe->timestamp = srcframe->timestamp;
-	dstframe->pixelformat = AV_PIX_FMT_YUV420P;	//yuv420p;
-	dstframe->realwidth = dgwidth;
-	dstframe->realheight = dgheight;
-	dstframe->realstride = dgwidth;
-	dstframe->realsize = dgwidth * dgheight * 3 / 2;
-
-	swsctx = lookup_frame_converter(
-		srcframe->realwidth,
-		srcframe->realheight,
-		srcframe->pixelformat,
-		dstframe->realwidth,
-		dstframe->realheight,
-		dstframe->pixelformat);
-	if (swsctx == NULL) {
-		swsctx = create_frame_converter(
-			srcframe->realwidth,
-			srcframe->realheight,
-			srcframe->pixelformat,
-			dstframe->realwidth,
-			dstframe->realheight,
-			dstframe->pixelformat);
-	}
-
-	if (frames[iid] > 20) {
-		unsigned char* src[] = { NULL, NULL, NULL, NULL };
-		unsigned char* dst[] = { NULL, NULL, NULL, NULL };
-		int srcstride[] = { 0, 0, 0, 0 };
-		int dststride[] = { 0, 0, 0, 0 };
-
-		src[0] = srcframe->imgbuf;
-		src[1] = src[0] + ((srcframe->realwidth * srcframe->realheight));
-		src[2] = src[1] + ((srcframe->realwidth * srcframe->realheight) >> 2);
-		src[3] = NULL;
-		srcstride[0] = srcframe->linesize[0];
-		srcstride[1] = srcframe->linesize[1];
-		srcstride[2] = srcframe->linesize[2];
-		srcstride[3] = NULL;
-
-		dst[0] = dstframe->imgbuf;
-		dst[1] = dstframe->imgbuf + dgheight * dgwidth;
-		dst[2] = dstframe->imgbuf + dgheight * dgwidth + (dgheight * dgwidth >> 2);
-		dst[3] = NULL;
-		dstframe->linesize[0] = dststride[0] = dgwidth;
-		dstframe->linesize[1] = dststride[1] = dgwidth >> 1;
-		dstframe->linesize[2] = dststride[2] = dgwidth >> 1;
-		dstframe->linesize[3] = dststride[3] = 0;
-
-		sws_scale(swsctx,
-			src, srcstride, 0, srcframe->realheight,
-			dst, dstframe->linesize);
-		vsource_embed_colorcode_inc(dstframe);
-		ga_error("filter-RGB2YUV: unsupported pixel format (%d)\n", srcframe->linesize[1]);
-		ga_error("filter-RGB2YUV: unsupported pixel format (%d)\n", srcframe->linesize[2]);
-
-		ga_error("filter-RGB2YUV: unsupported pixel format (%d)\n", srcframe->realheight);
-		ga_error("filter-RGB2YUV: unsupported pixel format (%d)\n", srcframe->realwidth);
-		*/
-		/*struct SwsContext* swsctx = NULL;
-		swsctx = sws_getContext(srcframe->realwidth, srcframe->realheight, srcframe->pixelformat, yolo_width, yolo_height,
-			AV_PIX_FMT_RGB24, SWS_BICUBIC, 0, 0, 0);
-		AVFrame* frame2 = NULL;
-		frame2 = av_frame_alloc();
-		int num_bytes = avpicture_get_size(AV_PIX_FMT_RGB24, yolo_width, yolo_height);
-		uint8_t* frame2_buffer = (uint8_t*)av_malloc(num_bytes * sizeof(uint8_t));
-		avpicture_fill((AVPicture*)frame2, frame2_buffer, AV_PIX_FMT_RGB24, yolo_width, yolo_height);
-		unsigned char* src[] = { NULL, NULL, NULL, NULL};
-		int srcstride[] = { 0 , 0, 0, 0};
-		src[0] = srcframe->imgbuf;
-		src[1] = src[0] + ((srcframe->realwidth * srcframe->realheight));
-		src[2] = src[1] + ((srcframe->realwidth * srcframe->realheight) >> 2);
-		src[3] = NULL;
-		srcstride[0] = srcframe->linesize[0];
-		srcstride[1] = srcframe->linesize[1];
-		srcstride[2] = srcframe->linesize[2];
-		srcstride[3] = NULL;
-		sws_scale(swsctx, src, srcstride, 0, srcframe->realheight, frame2->data, frame2->linesize);
-
-		/*
-		AVFrame* pFrameRGB;
-		int numBytes;
-		uint8_t* buffer;
-		struct SwsContext* img_convert_ctx;
-		av_register_all();
-
-		//Alloca una struct AVFrame
-		pFrameRGB = av_frame_alloc();
-		numBytes = avpicture_get_size(PIX_FMT_RGB24, dgwidth, dgheight);
-		buffer = (uint8_t*)av_malloc(numBytes * sizeof(uint8_t));
-		//Assegna le parti appropriate del buffer sulla superficie dell'immagine in pFrameRGB
-		//Tenere presente che pFrameRGB è un AVFrame, ma AVFrame è una superset di AVPicture
-		avpicture_fill((AVPicture*)pFrameRGB, buffer, PIX_FMT_RGB24, dgwidth, dgheight);
-
-		img_convert_ctx = sws_getContext(srcframe->realwidth, srcframe->realheight, srcframe->pixelformat,
-			dgwidth, dgheight, PIX_FMT_RGB24, SWS_LANCZOS, NULL, NULL, NULL);
-		sws_scale(img_convert_ctx, src,
-			srcstride, 0, srcframe->realheight,
-			pFrameRGB->data, pFrameRGB->linesize);
-		raw = fopen("C:\\Users\\omossad\\Desktop\\temp_frames\\frame_21.yuv", "wb");
-		ga_save_yuv420p(raw, dgwidth, dgheight, src, dstframe->linesize);
-		//int y;
-		//for (y = 0; y < dgheight; y++)
-		//{
-		//	fwrite(pFrameRGB->data[0] + y * pFrameRGB->linesize[0], 1, dgwidth * 3, raw);
-		//}
-		//fwrite(srcframe->imgbuf, sizeof(char), 1.5f * dgheight * dgwidth, raw);
-		//fclose(raw);
-		//sws_scale(swsctx, src, srcframe->linesize, 0, srcframe->realheight, src, srcframe->linesize);
-		//raw = fopen("c:\\Users\\omossad\\Desktop\\test.yuv", "ab");
-		//fwrite(srcframe->imgbuf, sizeof(char), 1.5f * dgheight * dgwidth, raw);
-		fclose(raw);
-		
-		SaveFrame(pFrameRGB, dgwidth, dgheight, frames[iid]);
-		av_free(buffer);
-		av_free(pFrameRGB);
-	}*/
-/*
-	if (frames[iid] == 50) {
-		int y;
-		raw = fopen("c:\\Users\\omossad\\Desktop\\test.ppm", "w");
-		fprintf(raw, "P6\n%d %d\n255\n", yolo_width, yolo_height); //  The PPM file adds fixed header information.
-		
-		for (y = 0; y < yolo_height; y++)
-			fwrite(frame2->data[0] + y * frame2->linesize[0], 1, yolo_width * 3, raw); //ppm storage format
-		fclose(raw);
-		//fwrite(frame2->data, sizeof(char), 3 * 416 * 416, raw);
-		//fclose(raw);
-	}
 	
-	f_num.open("c:\\Users\\omossad\\Desktop\\temp_frames\\test.txt");
-	f_num << frames[iid];
-	f_num.close();
-	ga_error("frame no: %d\n", frames[iid]);
-
-	//
-*/
-	if(frames[iid]%UPDATE_STEP != 0)
+	if (frames[iid] % LSTM_STEP != 0) {
 		return;
+	}
+	// DEEPGAME
+	else {
+		//ga_error("Updating ROIs");
+		std::ifstream infile("C:\\Users\\omossad\\Desktop\\ga_shared\\roi0.txt");
+		int category;
+		double x, y, w, h;
+		while (infile >> category >> x >> y >> w >> h) {
+			ROITuple_s r;
+			r.x = (x - w / 2) * realWidth;
+			r.y = (y - h / 2) * realHeight;
+			r.width = (w)*realWidth;
+			r.height = (h)*realHeight;
+			r.category = category;
+			ROIs[iid].push_back(r);
+			//ga_error("ROIS x-coordinate %d\n", r.x);
+		}
+		infile.close();
+	}
+	//
 
 	memset(ROI[iid],0,widthDelta *heightDelta * sizeof(float));
 	
@@ -1608,6 +1421,7 @@ vrc_cave_roi_lambda_threadproc(void *arg) {
 	//dpipe_t *pipe_d = dpipe_lookup(filterpipe[1]);
 	dpipe_t *dstpipe = dpipe_lookup(filterpipe[2]);
 	dpipe_t *pipe_bitrates = dpipe_lookup(filterpipe[3]);
+
 	
 	dpipe_buffer_t *srcdata = NULL;
 	dpipe_buffer_t *srcdata_bitrates = NULL;
@@ -1618,9 +1432,10 @@ vrc_cave_roi_lambda_threadproc(void *arg) {
 	vsource_frame_t *srcframe_bitrates = NULL;
 	vsource_frame_t *srcframe_d = NULL;
 	vsource_frame_t *dstframe = NULL;
+
 	
 	//if(pipe == NULL || pipe_d == NULL || dstpipe == NULL || pipe_bitrates == NULL) {
-	if(pipe == NULL ||  dstpipe == NULL || pipe_bitrates == NULL) {
+	if (pipe == NULL || dstpipe == NULL || pipe_bitrates == NULL) {
 		ga_error("RC: bad pipeline (src=%p; src_d=%p; dst=%p; src_bitrates=%p;).\n", pipe,  dstpipe, pipe_bitrates);
 		goto rc_quit;
 	}
@@ -1646,7 +1461,8 @@ vrc_cave_roi_lambda_threadproc(void *arg) {
 		dstframe->realheight = upSampleRatio*heightDelta;
 		dstframe->realstride = upSampleRatio*widthDelta;
 		dstframe->realsize = pow(upSampleRatio,2.0)*widthDelta * heightDelta;				
-		
+
+
 		clock_t begin_w=clock();
 		predictROIs(filterpipe[0], iid);
 		clock_t end_w=clock();//WEIGHT TIME -------> CAVE WEIGHTS
@@ -1797,10 +1613,12 @@ vrc_start(void *arg) {
 		//ga_error("dest_bitrates:%s\n",pipename[iid][2]);
 		snprintf(pipename[iid][3], MAXPARAMLEN, pipefmt[3], iid);
 		//ga_error("src_qps:%s\n",pipename[iid][3]);
+
 		enc_param[iid][0]=pipename[iid][0];
 		enc_param[iid][1]=pipename[iid][1];
 		enc_param[iid][2]=pipename[iid][2];
 		enc_param[iid][3]=pipename[iid][3];
+
 		switch(mode){
 			case CAVE_R:
 				K=ga_conf_readdouble("K");

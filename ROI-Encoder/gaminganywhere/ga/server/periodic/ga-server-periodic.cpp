@@ -57,7 +57,7 @@ static char *qpfmt_rc = "rc_map-%d";//output pipe name for the RC module's QP ma
 static char *filterpipe0_rc = "rc_filter-0";//input pipe name for RC's raw frame
 static char *filterpipe0_d_rc = filterpipe0_d;//input pipe name for RC's depth frame
 static char *qppipe0_rc = "rc_map-0";//output pipe name for the RC module's QP map
-static char *rc_param[] = { filterpipefmt_rc, filterpipefmt_d_rc, qpfmt_rc, bitratespipefmt };
+static char *rc_param[] = { filterpipefmt_rc, filterpipefmt_d_rc, qpfmt_rc, bitratespipefmt};
 static char *video_encoder_param[] = { filterpipefmt, filterpipefmt_rc, bitratespipefmt, qpfmt_rc };
 
 static struct gaRect *prect = NULL;
