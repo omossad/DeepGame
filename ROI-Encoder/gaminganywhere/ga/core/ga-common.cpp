@@ -66,9 +66,9 @@ using namespace std;
 			((unsigned char*)&(x))[3]
 #endif
 
-/** The gloabl log file name */
-static char *ga_logfile = NULL;
-
+/** The global log file name */
+//static char *ga_logfile = NULL;
+static char* ga_logfile = "C:\\Users\\omossad\\Desktop\\ga.log";
 /**
  * Compute the time difference for two \a timeval data structure, i.e.,
  * \a tv1 - \a tv2.

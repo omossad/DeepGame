@@ -529,7 +529,7 @@ vencoder_threadproc(void *arg) {
 			pipedata_qp = dpipe_load(pipe_qp, NULL);
 			//ga_error("reading qps\n");
 			pipeframe_qp = (vsource_frame_t*)pipedata_qp->pointer;
-			ga_error("UPDATING ROIS \n");
+			//ga_error("UPDATING ROIS \n");
 			pic_in.prop.quant_offsets = (float*)pipeframe_qp->imgbuf;
 			//pic_in.quantOffsets = (float*)pipeframe_qp->imgbuf;
 			/*unsigned int block_ind=0;
