@@ -195,7 +195,7 @@ static int round(float d)
 
 //****USED BY DEEPGAME
 std::ofstream f_num;
-#define LSTM_STEP 6
+#define LSTM_STEP 60
 
 /*!
  *************************************************************************************
@@ -896,7 +896,7 @@ vrc_init(void *arg) {
 			loadCL(iid,"R_Q_DISTANCE.cl",0,"ROI");
 		}
 		
-		std::ifstream infile("roi0.txt");
+		std::ifstream infile("C:\\Users\\omossad\\Desktop\\ga_shared\\roi0.txt");
 		int category;
 		double x,y,w,h;		
 		while(infile >> category >> x >> y >> w >> h){
@@ -997,13 +997,18 @@ static void updateDistanceCAVELambda(int iid){
 				float sumDist = 0.0f;
 				int xpixIndex = x * CU_SIZE + CU_SIZE / 2;
 				int ypixIndex = y * CU_SIZE + CU_SIZE / 2;
-				for (unsigned int r = 0;r<ROIs[iid].size();r++) {
-					int xMid = ROIs[iid][r].x + ROIs[iid][r].width / 2;
-					int yMid = ROIs[iid][r].y + ROIs[iid][r].height / 2;
-					float dist = max(1.0f, (float)sqrt(pow(xpixIndex - yMid, 2.0) + pow(ypixIndex - xMid, 2.0)));					
-					float e = (K*dist/ diagonal) / (importance[ROIs[iid][r].category]) ;
-					sumDist = sumDist + exp(-1.0*e);
-				}
+				//for (unsigned int r = 0;r<ROIs[iid].size();r++) {
+				//	int xMid = ROIs[iid][r].x + ROIs[iid][r].width / 2;
+				//	int yMid = ROIs[iid][r].y + ROIs[iid][r].height / 2;
+				//	float dist = max(1.0f, (float)sqrt(pow(xpixIndex - yMid, 2.0) + pow(ypixIndex - xMid, 2.0)));					
+				//	float e = (K*dist/ diagonal) / (importance[ROIs[iid][r].category]) ;
+				//	sumDist = sumDist + exp(-1.0*e);
+				//}
+				int xMid = ROIs[iid][0].x + ROIs[iid][0].width / 2;
+				int yMid = ROIs[iid][0].y + ROIs[iid][0].height / 2;
+				float dist = max(1.0f, (float)sqrt(pow(xpixIndex - yMid, 2.0) + pow(ypixIndex - xMid, 2.0)));					
+				float e = (K*dist/ diagonal) / (importance[ROIs[iid][0].category]) ;
+				sumDist = sumDist + exp(-1.0*e);
 
 				if (ROIs[iid].size() > 0)//ROI and CAVE
 					weights[iid][block_ind] = sumDist / ROIs[iid].size();

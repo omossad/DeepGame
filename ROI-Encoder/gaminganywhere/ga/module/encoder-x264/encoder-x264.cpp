@@ -350,31 +350,31 @@ vencoder_reconfigure(int iid) {
 		int doit = 0;
 		x264_encoder_parameters(encoder, &params);
 		//
-		if(reconf->crf > 0 && !rc) {
+		if(reconf->crf > 0){// && !rc) {
 			params.rc.f_rf_constant = 1.0 * reconf->crf;
 			doit++;
 		}
-		if(reconf->framerate_n > 0 && !rc) {
+		if(reconf->framerate_n > 0){// && !rc) {
 			params.i_fps_num = reconf->framerate_n;
 			params.i_fps_den = reconf->framerate_d > 0 ? reconf->framerate_d : 1;
 			doit++;
 		}
-		if(reconf->bitrateKbps > 0 && !rc) {
+		if(reconf->bitrateKbps > 0){// && !rc) {
 			// XXX: do not use x264_param_parse("bitrate"), it switches mode to ABR
 			// - although mode switching may be not allowed
 			params.rc.i_bitrate = reconf->bitrateKbps;
 			params.rc.i_vbv_max_bitrate = reconf->bitrateKbps;
 			doit++;
 		}
-		if(reconf->bufsize > 0 && !rc) {
+		if(reconf->bufsize > 0){// && !rc) {
 			params.rc.i_vbv_buffer_size = reconf->bufsize;
 			doit++;
 		}
-		if (rc) {
+		//if (rc) {
 			//ga_error("force flush:%d\n", params.forceFlush);
 			//params.forceFlush = 1;
-			doit++;
-		}
+		//	doit++;
+		//}
 		//
 		if(doit > 0) {
 			if(x264_encoder_reconfig(encoder, &params) < 0) {
