@@ -162,7 +162,7 @@ def create_model_inputs():
 
 
 if __name__ == "__main__":
-    create_frames()
+    #create_frames()
     create_labels()
     #refine_labels()
     create_model_inputs()

@@ -7,29 +7,19 @@ import math
 
 games = utils.get_game_list()
 '''
-LIMIT ONE GAME FOR NOW
+LIMIT ONE GAME FOR TESTING PURPOSES
 games = [games[0]]
-
 '''
-
-
-
 data_path = utils.get_path()
 
-#ffmpeg.exe -i C:\Users\omossad\Desktop\dataset\raw_frames\nba\am_0\0000-scrn.avi -vf fps=10 C:\Users\omossad\Desktop\dataset\raw_frames\nba\am_0\frame_%05d.jpg
-
-#class FrameInfo:
-#    def __init__(self, frameNum, xFixation, yFixation, sceneType):
-#        self.frameNum  = frameNum
-#        self.xFixation = xFixation
-#        self.yFixation = yFixation
-#        self.sceneType = sceneType
-#        label_path = utils.get_path() + 'raw_data\\'
-
-
 def create_frames():
+### SPLIT RECORDED VIDEOS TO FRAMES USING FFMPEG
+#ffmpeg.exe -i video_path.avi -vf fps=10 output_folder\frame_%05d.jpg
     print('Split Video Sequences into Frames \n')
-    players_list = utils.listdirs(data_path + 'raw_data\\')
+    fps = utils.get_fps()
+    input_dir  = os.path.join(data_path, 'public')
+    output_dir = os.path.join(data_path, 'model_data', 'frames')
+    players_list = utils.listdirs(input_dir)
     for game in games:
         print('---------------------------------------')
         print('Processing ' + game + ' video sequences')
@@ -40,17 +30,13 @@ def create_frames():
             for x in players_list:
                 if x.startswith(file[0:2]):
                     player_name = x
-
-            #video_name = format(int(file[3:]), '04d')
-            #input_video = data_path + 'raw_data\\' + player_name + '\\user\\' + video_name + '-scrn.avi'
-            input_video = data_path + 'raw_data\\' + player_name + '\\result\\' + file + '.avi'
-            output_path = data_path + 'raw_frames\\' + game + '\\' + file + '\\'
+            input_video = os.path.join(input_dir, player_name, file + '.avi')
+            output_path = os.path.join(output_dir, game, file)
             os.makedirs(output_path, exist_ok=True)
             cmd = 'ffmpeg.exe -i '
             cmd = cmd + input_video
-            cmd = cmd + ' -vf fps=10 '
-            cmd = cmd + output_path
-            cmd = cmd + 'frame_%05d.jpg'
+            cmd = cmd + ' -vf fps=' + str(fps) + ' '
+            cmd = cmd + os.path.join(output_path, 'frame_%05d.jpg')
             print(cmd)
             os.system(cmd)
 
@@ -66,16 +52,16 @@ def find_nearest(array,value):
 
 
 def process_fixation(f_data, g_data, num_frames):
+    ### HELPER FUNCTION TO CONVERT GAZE - FIXATION DATA TO VALID LABELS
     gaze_times = np.asarray(g_data)[:,0]
     fixation_ids = np.asarray(f_data)[:,2]
     fps = utils.get_fps()
     frame_no  = 0
     fixations = []
     while frame_no < num_frames:
-        #adjust_offset = 1439/1414.0 # this value to offset difference between Gazepoint software and raw video
+        #adjust_offset = 1439/1414.0 # this value to offset difference between Gazepoint software and raw video (ignored if using processed video)
         frame_time = frame_no * 1/fps
-        #frame_time = frame_no * 1/fps * adjust_offset
-        #print(frame_time)
+        #frame_time = frame_no * 1/fps * adjust_offset (ignored)
         # find the nearest gaze reading to the frame time
         g_idx = find_nearest(gaze_times, frame_time)
 
@@ -93,29 +79,23 @@ def process_fixation(f_data, g_data, num_frames):
             idx = idx[0][0]
         fixations.append([f_data[idx][0], f_data[idx][1], g_data[g_idx][2]])
         frame_no = frame_no + 1
-
-        '''
-        ### OLD FIXATIONS CODE (IGNORE)
-        if frame_time < float(data[iter][2]) + float(data[iter][3]):
-            fixations.append([float(data[iter][0]), float(data[iter][1]), int(data[iter][-1])])
-            frame_no = frame_no + 1
-        else:
-            if iter < len(data) - 1:
-                iter = iter + 1
-            else:
-                data[iter][3] = 99
-        '''
     fixs = np.array(fixations)
     return {'pos_x': fixs[:,0], 'pos_y': fixs[:,1], 'valid': fixs[:,2].astype(int)}
 
 
 def create_labels():
+    ### CREATE THE LABES BASED ON GAZE AND FIXATION DATA 
     print('Find Frame Fixations')
-    players_list = utils.listdirs(data_path + 'raw_data\\')
+    input_dir  = os.path.join(data_path, 'public')
+    output_dir = os.path.join(data_path, 'model_data', 'labels')
+    os.makedirs(output_dir, exist_ok=True)
+    frames_dir = os.path.join(data_path, 'model_data', 'frames')
+    players_list = utils.listdirs(input_dir)
     for game in games:
         print('---------------------------------------')
         print('Processing ' + game + ' fixations')
         print('---------------------------------------')
+        os.makedirs(os.path.join(output_dir, game), exist_ok=True)
         file_list = utils.get_data(game)
         for file in file_list:
             print('Current file is: ' + file)
@@ -123,10 +103,10 @@ def create_labels():
                 if x.startswith(file[0:2]):
                     player_name = x
             fixation_file_name = 'User '+ file[3:]
-            gaze_file = data_path + 'raw_data\\' + player_name + '\\result\\' + fixation_file_name + '_all_gaze.csv'
-            fixation_file = data_path + 'raw_data\\' + player_name + '\\result\\' + fixation_file_name + '_fixations.csv'
-            output_file = data_path + 'raw_labels\\' + game + '\\' + file + '.csv'
-            frames_path = data_path + 'raw_frames\\' + game + '\\' + file + '\\'
+            gaze_file     = os.path.join(input_dir, player_name, fixation_file_name + '_all_gaze.csv')
+            fixation_file = os.path.join(input_dir, player_name, fixation_file_name + '_fixations.csv')
+            output_file = os.path.join(output_dir, game, file + '.csv')
+            frames_path = os.path.join(frames_dir, game, file)
             num_frames = len(os.listdir(frames_path))
             with open(fixation_file) as f:
                 reader = csv.reader(f)
@@ -143,6 +123,8 @@ def create_labels():
             pd.DataFrame(fixations).to_csv(output_file)
 
 def refine_labels():
+    ### ELIMINATE INVALID GAZES AND FIXATIONS (e.g. eye blinks or out of range)
+    ### WE USE ANALYSIS METHOD AND MANUAL FRAME EXTRACTION INSTEAD
     print('Not supported yet')
 
 def create_overlap(arr, n_items, n_overlap):
@@ -159,20 +141,27 @@ def create_overlap(arr, n_items, n_overlap):
 
 
 def create_model_inputs():
+    ### CONVERT FRAMES AND FIXATIONS TO MODEL INPUTS
     print('CREATING MODEL INPUTS')
     [ipt_len, opt_len] = utils.get_model_input_params()
-    players_list = utils.listdirs(data_path + 'raw_data\\')
+    input_dir  = os.path.join(data_path, 'public')
+    output_dir = os.path.join(data_path, 'model_data', 'inputs')
+    os.makedirs(output_dir, exist_ok=True)
+    labels_dir =  os.path.join(data_path, 'model_data', 'labels')
+    frames_dir =  os.path.join(data_path, 'model_data', 'frames')
+    players_list = utils.listdirs(input_dir)
     for game in games:
         print('---------------------------------------')
         print('Processing ' + game + ' model inputs')
         print('---------------------------------------')
+        os.makedirs(os.path.join(output_dir, game), exist_ok=True)
         file_list = utils.get_data(game)
 
         for file in file_list:
             print('Current file is: ' + file)
-            labels_file = data_path + 'raw_labels\\' + game + '\\' + file + '.csv'
-            frames_path = data_path + 'raw_frames\\' + game + '\\' + file + '\\'
-            output_file = data_path + 'model_inputs\\' + game + '\\' + file + '.csv'
+            labels_file = os.path.join(labels_dir, game, file + '.csv')
+            frames_path = os.path.join(frames_dir, game, file)
+            output_file = os.path.join(output_dir, game, file + '.csv')
             frame_names = os.listdir(frames_path)
             num_frames = len(frame_names)
             model_inputs = create_overlap(frame_names, ipt_len + opt_len, opt_len)
@@ -191,12 +180,10 @@ def create_model_inputs():
                     i.remove(j)
                     i.append(l_data[utils.get_frame_no(j)][1:3])
             ## DATA IS: Frame Names [1: input_len] , Fixations (X,Y) [1: output_len]
-
             pd.DataFrame(model_inputs).to_csv(output_file)
 
-
-if __name__ == "__main__":
+def preprocess():
     #create_frames()
-    create_labels()
+    #create_labels()
     #refine_labels()
-    #create_model_inputs()
+    create_model_inputs()

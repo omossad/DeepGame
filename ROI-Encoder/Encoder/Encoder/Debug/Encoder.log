@@ -1,82 +1,82 @@
 ﻿  rc.cpp
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(287): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(288): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.16299.0\ucrt\stdio.h(207): note: see declaration of 'fopen'
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(333): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(334): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.16299.0\ucrt\stdio.h(1772): note: see declaration of 'sprintf'
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(449): warning C4244: 'initializing': conversion from 'unsigned __int64' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(455): warning C4244: '=': conversion from 'unsigned __int64' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(512): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(519): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(520): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(521): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(525): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(526): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(527): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(528): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(534): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(570): warning C4244: 'initializing': conversion from 'unsigned int' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(612): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(623): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(653): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(655): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(655): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(660): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(664): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(666): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(670): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(675): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(675): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(695): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(695): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(695): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(776): warning C4101: 'tmpbuf': unreferenced local variable
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(939): warning C4018: '<': signed/unsigned mismatch
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(940): warning C4018: '<': signed/unsigned mismatch
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(976): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(995): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1006): warning C4244: '=': conversion from 'float' to 'unsigned __int64', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1019): warning C4244: 'argument': conversion from 'double' to 'size_t', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1103): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(450): warning C4244: 'initializing': conversion from 'unsigned __int64' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(456): warning C4244: '=': conversion from 'unsigned __int64' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(513): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(520): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(521): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(522): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(526): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(527): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(528): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(529): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(535): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(571): warning C4244: 'initializing': conversion from 'unsigned int' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(613): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(624): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(654): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(656): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(656): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(661): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(665): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(667): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(671): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(676): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(676): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(696): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(696): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(696): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(777): warning C4101: 'tmpbuf': unreferenced local variable
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(940): warning C4018: '<': signed/unsigned mismatch
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(941): warning C4018: '<': signed/unsigned mismatch
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(977): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(996): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1007): warning C4244: '=': conversion from 'float' to 'unsigned __int64', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1020): warning C4244: 'argument': conversion from 'double' to 'size_t', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1104): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.16299.0\ucrt\stdio.h(207): note: see declaration of 'fopen'
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1105): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1106): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.16299.0\ucrt\stdio.h(207): note: see declaration of 'fopen'
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1106): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1107): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.16299.0\ucrt\stdio.h(207): note: see declaration of 'fopen'
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1107): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1108): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.16299.0\ucrt\stdio.h(207): note: see declaration of 'fopen'
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1130): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1131): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1132): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1133): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1160): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1166): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1173): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1195): warning C4305: '=': truncation from 'double' to 'float'
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1197): warning C4305: '=': truncation from 'double' to 'float'
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1199): warning C4305: '=': truncation from 'double' to 'float'
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1247): warning C4018: '<': signed/unsigned mismatch
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1248): warning C4018: '<': signed/unsigned mismatch
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1287): warning C4018: '<': signed/unsigned mismatch
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1288): warning C4018: '<': signed/unsigned mismatch
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1316): warning C4018: '<': signed/unsigned mismatch
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1317): warning C4018: '<': signed/unsigned mismatch
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1341): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1343): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1366): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1367): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1378): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1379): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1483): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1484): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1485): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1563): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1602): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1607): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1669): warning C4244: 'argument': conversion from 'float' to 'size_t', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1673): warning C4244: 'argument': conversion from 'float' to 'long', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1674): warning C4244: 'argument': conversion from 'float' to 'size_t', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1683): warning C4244: 'argument': conversion from 'float' to 'long', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1684): warning C4244: 'argument': conversion from 'float' to 'size_t', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1696): warning C4244: 'argument': conversion from 'float' to 'long', possible loss of data
-c:\users\omossad\desktop\codes\roi-encoder\encoder\encoder\rc.cpp(1697): warning C4244: 'argument': conversion from 'float' to 'size_t', possible loss of data
-  Encoder.vcxproj -> C:\Users\omossad\Desktop\codes\ROI-Encoder\Encoder\Debug\Encoder.exe
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1131): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1132): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1133): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1134): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1161): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1167): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1174): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1196): warning C4305: '=': truncation from 'double' to 'float'
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1198): warning C4305: '=': truncation from 'double' to 'float'
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1200): warning C4305: '=': truncation from 'double' to 'float'
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1248): warning C4018: '<': signed/unsigned mismatch
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1249): warning C4018: '<': signed/unsigned mismatch
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1288): warning C4018: '<': signed/unsigned mismatch
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1289): warning C4018: '<': signed/unsigned mismatch
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1317): warning C4018: '<': signed/unsigned mismatch
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1318): warning C4018: '<': signed/unsigned mismatch
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1342): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1344): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1367): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1368): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1379): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1380): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1484): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1485): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1486): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1564): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1603): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1608): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1670): warning C4244: 'argument': conversion from 'float' to 'size_t', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1674): warning C4244: 'argument': conversion from 'float' to 'long', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1675): warning C4244: 'argument': conversion from 'float' to 'size_t', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1684): warning C4244: 'argument': conversion from 'float' to 'long', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1685): warning C4244: 'argument': conversion from 'float' to 'size_t', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1697): warning C4244: 'argument': conversion from 'float' to 'long', possible loss of data
+c:\users\omossad\desktop\codes\deepgame\roi-encoder\encoder\encoder\rc.cpp(1698): warning C4244: 'argument': conversion from 'float' to 'size_t', possible loss of data
+  Encoder.vcxproj -> C:\Users\omossad\Desktop\codes\DeepGame\ROI-Encoder\Encoder\Debug\Encoder.exe

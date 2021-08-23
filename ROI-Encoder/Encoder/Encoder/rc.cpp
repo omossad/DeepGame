@@ -11,6 +11,7 @@
 #include <math.h>
 #include <time.h>
 #include "CL/cl.hpp"
+#include <x265_config.h>
 #include <x265.h>
 //#include <kvazaar.h>
 using namespace std;

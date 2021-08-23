@@ -5,7 +5,7 @@ import qp as q_script
 base_path='D:\\Encoding\\encoding_files\\nhl\\'
 
 qp=[22,27,32,37]
-K=[[7,6,5,4]]
+K=[[7,6,3,2]]
 #length=304
 length=99
 size=0
