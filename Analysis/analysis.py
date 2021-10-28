@@ -8,10 +8,6 @@ from itertools import groupby
 from operator import itemgetter
 
 games = utils.get_game_list()
-'''
-LIMIT ONE GAME FOR TESTING PURPOSES
-games = [games[0]]
-'''
 data_path = utils.get_path()
 
 
@@ -50,21 +46,21 @@ def consecutive_integers(nums):
 '''
 
 def analyze():
-    dump_arr = []
     print('Find Invalid Fixations')
     eye_blink_thre = utils.get_eye_blink_threshold()
-    input_dir  = os.path.join(data_path, 'model_data', 'labels')
-    print(input_dir)
-    #players_list = utils.listdirs(data_path + 'raw_data\\')
+    output_dir  = os.path.join(data_path, 'analysis')
+
     for game in games:
-        os.makedirs(os.path.join(data_path, 'analysis', game), exist_ok=True)
+        os.makedirs(os.path.join(output_dir, game), exist_ok=True)
         print('---------------------------------------')
         print('Processing ' + game )
         print('---------------------------------------')
         file_list = utils.get_data(game)
+        file_list = [file_list[0]]
         for file in file_list:
             print('Current file is: ' + file)
             fixation_file = os.path.join(data_path, 'model_data', 'labels', game, file + '.csv')
+            frames_to_remove = []
             with open(fixation_file) as f:
                 reader = csv.reader(f)
                 next(reader) # skip header
@@ -81,14 +77,6 @@ def analyze():
                 consctv_lst_len = []    # VARIABLE USED FOR ANALYSIS ONLY
                 for i in consctv_lst:                        
                     if len(i) > eye_blink_thre:
+                        frames_to_remove.extend(i)
                         consctv_lst_len.append(len(i))
-                print(consctv_lst_len)
-                dump_arr.extend(consctv_lst_len)
-            #print(valid_flags)
-            #print(len(data))
-            #print(data)
-    #np.save("consecutives.txt", dump_arr)
-
-#if __name__ == "__main__":
-    #create_frames()
-#    analyze()
+            np.save(os.path.join(output_dir, game, file), frames_to_remove)
